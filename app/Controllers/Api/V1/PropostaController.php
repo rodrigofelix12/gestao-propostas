@@ -96,4 +96,16 @@ class PropostaController extends BaseApiController
             $this->service->cancel((int) $id)
         );
     }
+
+    // GET /propostas/{id}/auditoria
+    public function auditoria($id)
+    {
+        return $this->handle(function () use ($id) {
+
+            $filters = $this->request->getGet();
+
+            return $this->service->getAuditoria((int) $id, $filters);
+        });
+    }
+
 }

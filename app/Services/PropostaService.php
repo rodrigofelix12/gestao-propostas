@@ -261,4 +261,39 @@ class PropostaService
             'created_at'  => date('Y-m-d H:i:s')
         ]);
     }
+
+    public function getAuditoria(int $propostaId, array $filters = [])
+    {
+        $this->findById($propostaId);
+
+        $builder = $this->auditoriaModel
+            ->where('proposta_id', $propostaId)
+            ->orderBy('created_at', 'DESC');
+
+        $page    = $filters['page'] ?? 1;
+        $perPage = $filters['per_page'] ?? 10;
+
+        $data = $builder->paginate($perPage, 'default', $page);
+
+        return [
+            'data' => array_map(function ($item) {
+                return [
+                    'id'         => $item->id,
+                    'evento'     => $item->evento,
+                    'actor'      => $item->actor,
+                    'payload'    => json_decode($item->payload, true),
+                    'created_at' => $item->created_at,
+                ];
+            }, $data),
+            'meta' => [
+                'pagination' => [
+                    'total'        => $this->auditoriaModel->pager->getTotal(),
+                    'per_page'     => $perPage,
+                    'current_page' => $page,
+                    'last_page'    => $this->auditoriaModel->pager->getPageCount(),
+                ]
+            ]
+        ];
+    }
+
 }
