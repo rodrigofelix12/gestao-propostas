@@ -16,7 +16,6 @@ class PropostaAuditoriaModel extends Model
         'payload'
     ];
 
-    protected $returnType = 'array';
-
+    protected $returnType = \App\Entities\PropostaAuditoriaEntity::class;
     protected $useTimestamps = false;
 }

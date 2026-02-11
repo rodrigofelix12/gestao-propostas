@@ -9,9 +9,6 @@ class PropostaModel extends Model
     protected $table = 'propostas';
     protected $primaryKey = 'id';
 
-    protected $useTimestamps = false;
-    protected $useSoftDeletes = true;
-
     protected $allowedFields = [
         'cliente_id',
         'produto',
@@ -22,5 +19,10 @@ class PropostaModel extends Model
         'deleted_at'
     ];
 
-    protected $returnType = 'array';
+    protected $returnType = \App\Entities\PropostaEntity::class;
+    protected $useTimestamps = true;
+    protected $useSoftDeletes = true;
+    protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
+    protected $deletedField  = 'deleted_at';
 }
