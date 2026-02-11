@@ -6,6 +6,14 @@ use CodeIgniter\Model;
 
 class PropostaModel extends Model
 {
+    public function __construct($db = null)
+    {
+        parent::__construct();
+        if ($db) {
+            $this->db = $db;
+        }
+    }
+    
     protected $table = 'propostas';
     protected $primaryKey = 'id';
 

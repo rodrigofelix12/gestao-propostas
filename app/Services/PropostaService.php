@@ -18,11 +18,11 @@ class PropostaService
     private PropostaAuditoriaModel $auditoriaModel;
     private $db;
 
-    public function __construct()
+    public function __construct($db = null)
     {
-        $this->propostaModel  = new PropostaModel();
-        $this->auditoriaModel = new PropostaAuditoriaModel();
-        $this->db = Database::connect();
+        $this->db = $db ?? \Config\Database::connect();
+        $this->propostaModel  = new PropostaModel($this->db);
+        $this->auditoriaModel = new PropostaAuditoriaModel($this->db);
     }
 
     public function create(array $data)
