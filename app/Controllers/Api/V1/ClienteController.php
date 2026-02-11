@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers\Api;
+namespace App\Controllers\Api\V1;
 
 use CodeIgniter\RESTful\ResourceController;
 
