@@ -18,6 +18,17 @@ $routes->group('api', function (RouteCollection $routes) {
             'controller' => 'Api\V1\ClienteController'
         ]);
 
+        $routes->resource('propostas', [
+            'controller' => 'Api\V1\PropostaController'
+        ]);
+
+        $routes->post('propostas/(:num)/submit', 'Api\V1\PropostaController::submit/$1');
+        $routes->post('propostas/(:num)/approve', 'Api\V1\PropostaController::approve/$1');
+        $routes->post('propostas/(:num)/reject', 'Api\V1\PropostaController::reject/$1');
+        $routes->post('propostas/(:num)/cancel', 'Api\V1\PropostaController::cancel/$1');
+
+        $routes->get('propostas/(:num)/auditoria', 'Api\V1\PropostaController::auditoria/$1');
+
     });
 
 });

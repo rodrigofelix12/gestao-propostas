@@ -20,4 +20,18 @@ class PropostaStatus
             self::CANCELED,
         ];
     }
+
+    public static function canTransition(string $from, string $to): bool
+    {
+        $transitions = [
+            self::DRAFT => [self::SUBMITTED, self::CANCELED],
+            self::SUBMITTED => [self::APPROVED, self::REJECTED, self::CANCELED],
+            self::APPROVED => [],
+            self::REJECTED => [],
+            self::CANCELED => [],
+        ];
+
+        return in_array($to, $transitions[$from] ?? []);
+    }
+
 }
