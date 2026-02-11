@@ -3,86 +3,74 @@
 namespace App\Controllers\Api\V1;
 
 use CodeIgniter\RESTful\ResourceController;
+use App\Services\ClienteService;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 class ClienteController extends ResourceController
 {
-    protected $modelName = 'App\Models\ClienteModel';
-    protected $format    = 'json';
+    protected $format = 'json';
+    protected ClienteService $clienteService;
 
-    // GET /api/clientes
+    public function __construct()
+    {
+        $this->clienteService = new ClienteService();
+    }
+
     public function index()
     {
-        $clientes = $this->model->paginate(10);
-
-        return $this->respond([
-            'data' => $clientes,
-            'pager' => [
-                'currentPage' => $this->model->pager->getCurrentPage(),
-                'totalPages'  => $this->model->pager->getPageCount(),
-                'total'       => $this->model->pager->getTotal(),
-            ]
-        ]);
+        return $this->respond(
+            $this->clienteService->paginate(10)
+        );
     }
 
-    // GET /api/clientes/{id}
     public function show($id = null)
     {
-        $cliente = $this->model->find($id);
-
-        if (!$cliente) {
-            return $this->failNotFound('Cliente não encontrado');
+        try {
+            $cliente = $this->clienteService->findById((int) $id);
+            return $this->respond($cliente);
+        } catch (PageNotFoundException $e) {
+            return $this->failNotFound($e->getMessage());
         }
-
-        return $this->respond($cliente);
     }
 
-    // POST /api/clientes
     public function create()
     {
         $data = $this->request->getJSON(true);
 
-        if (!$this->model->insert($data)) {
-            return $this->failValidationErrors($this->model->errors());
+        $result = $this->clienteService->create($data);
+
+        if (isset($result['errors'])) {
+            return $this->failValidationErrors($result['errors']);
         }
 
-        return $this->respondCreated([
-            'message' => 'Cliente criado com sucesso'
-        ]);
+        return $this->respondCreated($result);
     }
 
-    // PUT /api/clientes/{id}
     public function update($id = null)
     {
-        $cliente = $this->model->find($id);
-
-        if (!$cliente) {
-            return $this->failNotFound('Cliente não encontrado');
-        }
-
         $data = $this->request->getJSON(true);
 
-        if (!$this->model->update($id, $data)) {
-            return $this->failValidationErrors($this->model->errors());
-        }
+        try {
+            $result = $this->clienteService->update((int) $id, $data);
 
-        return $this->respond([
-            'message' => 'Cliente atualizado com sucesso'
-        ]);
+            if (isset($result['errors'])) {
+                return $this->failValidationErrors($result['errors']);
+            }
+
+            return $this->respond($result);
+
+        } catch (PageNotFoundException $e) {
+            return $this->failNotFound($e->getMessage());
+        }
     }
 
-    // DELETE /api/clientes/{id}
     public function delete($id = null)
     {
-        $cliente = $this->model->find($id);
-
-        if (!$cliente) {
-            return $this->failNotFound('Cliente não encontrado');
+        try {
+            $this->clienteService->delete((int) $id);
+            return $this->respondDeleted(['message' => 'Cliente removido com sucesso']);
+        } catch (PageNotFoundException $e) {
+            return $this->failNotFound($e->getMessage());
         }
-
-        $this->model->delete($id);
-
-        return $this->respondDeleted([
-            'message' => 'Cliente removido com sucesso'
-        ]);
     }
 }
